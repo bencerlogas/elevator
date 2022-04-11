@@ -1,55 +1,75 @@
 <template>
-  <MyElevator
-    v-for="elevator in elevators"
-    :key="elevator.id"
-    :elevator="elevator"
-    :nrOfFloors="nrOfFloors"
-  />
-  <div class="btns">
-    <div v-for="upDwnBtn in upDwnBtns" :key="upDwnBtn.id" class="up-down-btns">
-      <div>{{upDwnBtn.id}}</div>
-      <button @click="btnPress">↑</button>
-      <div>{{upDwnBtn.isPressed}}</div>
-      <button @click="btnPress">↓</button>
+  <MyElevator v-for="elevator in elevators" :key="elevator.id" :elevator="elevator" :nrOfFloors="nrOfFloors" />
+  <div class="up-down-btns">
+    <div v-for="(upDwnBtn, index) in upDwnBtns" :key="upDwnBtn.id" class="up-down-btn">
+      <div>
+        <div>{{ upDwnBtns.length - 1 - index }}</div>
+        <button @click="btnPress('up', index)">↑</button>
+        <!--div>{{ upDwnBtn.isPressed }}</div-->
+        <button @click="btnPress('down', index)">↓</button>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import MyElevator from "./components/MyElevator.vue";
-import { defineComponent, ref } from "vue";
+import MyElevator from './components/MyElevator.vue';
+import { defineComponent, ref } from 'vue';
 
 export default defineComponent({
   components: {
-    MyElevator,
+    MyElevator
   },
   setup() {
     const nrOfFloors = ref(7);
     const upDwnBtns = ref([]);
-    for ( let i = 0; i < nrOfFloors.value; i++ ) {
-      upDwnBtns.value.push({isPressed:false,id:i})
+    for (let i = 0; i < nrOfFloors.value; i++) {
+      upDwnBtns.value.push({ isPressed: false, id: i });
     }
     console.log(upDwnBtns.value);
     const elevators = ref([
       {
         currentFloor: 0,
         isMoving: false,
+        callQueue: []
       },
       {
         currentFloor: nrOfFloors.value - 1,
         isMoving: false,
+        callQueue: []
       },
+      // {
+      //   currentFloor: nrOfFloors.value - 2,
+      //   isMoving: false,
+      //   callQueue: []
+      // }
     ]);
-    function btnPress (){
-      console.log(upDwnBtns.value)
+    function btnPress(direction, index) {
+      console.log(direction, index);
+      const indexOfElevator = getClosestElevator(index);
+      elevators.value[indexOfElevator].callQueue.push(index);
+      console.log(indexOfElevator);
+      // elevators.value[indexOfElevator].isMoving = true;
+      elevators.value[indexOfElevator].currentFloor = index;
+    }
+
+    // get the the closest floor to the callFllor if
+    // two elevators are to the same distance, call the one that is on the lower floor
+    function getClosestElevator(callFloor) {
+      const elevatorsDistance = elevators.value.map((elevator) => {
+        return Math.abs(elevator.currentFloor - callFloor);
+      });
+      const minDistance = Math.min(...elevatorsDistance);
+      const indexOfElevator = elevatorsDistance.indexOf(minDistance);
+      return indexOfElevator;
     }
     return {
       btnPress,
-      elevators,
+      elevators: elevators.value.reverse(),
       nrOfFloors,
-      upDwnBtns,
+      upDwnBtns: upDwnBtns.value.reverse()
     };
-  },
+  }
 });
 </script>
 
@@ -83,7 +103,7 @@ pre {
 }
 
 .passing.floor::after {
-  content: "";
+  content: '';
   position: absolute;
   top: 20px;
   left: 50px;
@@ -132,7 +152,7 @@ pre {
 
 .numered-btns {
   opacity: 1;
-  margin: 1rem 1rem;
+  margin: 4.2rem 0.2rem;
   display: flex;
   flex-direction: column;
 }
@@ -142,8 +162,11 @@ pre {
 }
 
 .elevator-buttons {
+  vertical-align: 0%;
   z-index: 1;
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   display: flex;
   justify-content: center;
@@ -157,6 +180,13 @@ pre {
   box-sizing: border-box;
   width: 1.2rem;
   height: 1.2rem;
+}
+
+.up-down-btns {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .up-down-btns {
