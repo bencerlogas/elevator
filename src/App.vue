@@ -1,5 +1,5 @@
 <template>
-  <MyElevator v-for="elevator in elevators" :key="elevator.id" :elevator="elevator" :nrOfFloors="nrOfFloors" />
+  <MyElevator @num-button="insideBtns" v-for="elevator in elevators" :key="elevator.id" :elevator="elevator" :nrOfFloors="nrOfFloors" />
   <div class="up-down-btns">
     <div v-for="(upDwnBtn, index) in upDwnBtns" :key="upDwnBtn.id" class="up-down-btn">
       <div>
@@ -53,7 +53,7 @@ export default defineComponent({
       elevators.value[indexOfElevator].currentFloor = index;
     }
 
-    // get the the closest floor to the callFllor if
+    // get the the closest floor to the callFloor if
     // two elevators are to the same distance, call the one that is on the lower floor
     function getClosestElevator(callFloor) {
       const elevatorsDistance = elevators.value.map((elevator) => {
@@ -63,7 +63,15 @@ export default defineComponent({
       const indexOfElevator = elevatorsDistance.indexOf(minDistance);
       return indexOfElevator;
     }
+    // insideBtns(index) controls the elevators[1] and elevators[2] separetely without getClosestElevator
+    function insideBtns(index) {
+      elevators.value[0].currentFloor = index;
+      elevators.value[0].callQueue.push(index);
+      console.log(elevators.value[0].callQueue);
+    }
+
     return {
+      insideBtns,
       btnPress,
       elevators: elevators.value.reverse(),
       nrOfFloors,

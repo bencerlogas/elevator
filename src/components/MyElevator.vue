@@ -5,8 +5,8 @@
         <div class="door"></div>
         <div class="door"></div>
         <div class="elevator-buttons">
-          <div class="numered-btns" v-for="(numeredBtn, index) in numeredBtns.slice()" :key="numeredBtn.id">
-            <button @click="numBtnPress(index)" class="number">{{numeredBtn.id}}</button>
+          <div class="numered-btns" v-for="(numeredBtn, index) in numeredBtns" :key="numeredBtn.id">
+            <button @click="numBtnPress(index,numeredBtnPressed)" class="number">{{numeredBtn.id}}</button>
           </div>
         </div>
       </div>
@@ -25,26 +25,31 @@ export default {
     nrOfFloors: {
       type: Number,
       required: true,
-    },
+    }
   },
-  setup(props) {
-    let elev = ref(props.elevator);
-    console.log(elev);
+  setup(props, { emit }) {
+    //const elev = ref(props.elevator);
     const numeredBtns = ref([]);
     for (let i = 0; i < props.nrOfFloors; i++) {
-      numeredBtns.value.push({ id: i });
+      numeredBtns.value.push({ id: i,numeredBtnPressed: false });
     }
     console.log(numeredBtns.value);
     const floors = ref([]);
     for (let i = 0; i < props.nrOfFloors; i++) {
       floors.value.push({ isHere: i === props.elevator.currentFloor, isPassing: false });
     }
-    // nmBtnPress calls elevator to the floor
-    function numBtnPress(index) {
-      elev.value.callQueue.reverse();
-      elev.value.callQueue.push(index);
-      elev.value.currentFloor = index;
+    // emit numBtnPress(index) to parent
+    function numBtnPress (index,numeredBtnPressed) {
+      emit("numButton", index,numeredBtnPressed);
     }
+
+    /*function numBtnPress(index) {
+      emit(numBtnPress(index));
+    }*/
+    /*function numBtnPress(index) {
+      elev.value.callQueue.push(index);
+      elev.value.currentFloor = index.reverse();
+    }*/
     console.log(props.elevator);
     console.log(floors.value)
     return {
