@@ -46,7 +46,6 @@ export default {
   },
   emits: ["buttonPressed"],
   setup(props, { emit }) {
-    //const elev = ref(props.elevator);
     const numeredBtns = ref([]);
     for (let i = 0; i < props.nrOfFloors; i++) {
       numeredBtns.value.push({
@@ -55,7 +54,6 @@ export default {
         thisElevator: props.elevator.elevatorId,
       });
     }
-    //console.log(numeredBtns.value);
     const floors = ref([]);
     for (let i = 0; i < props.nrOfFloors; i++) {
       floors.value.push({
@@ -67,38 +65,10 @@ export default {
     function switchValue(index) {
       numeredBtns.value[index].numeredBtnPressed =
         !numeredBtns.value[index].numeredBtnPressed;
-      //console.log(numeredBtns.value);
-      //return numeredBtns.value[index].numeredBtnPressed;
-      //numeredBtnPressed.value = true;
-      //emit("numButton", index,numeredBtns);
     }
-    //console.log(numeredBtns.value);
-    // cycle through numeredBtns and check if any of them is pressed
-    // if so, emit to parent
     function numBtnPress(index, btnNumber) {
       emit("buttonPressed", { index, btnNumber });
-      // for (let i = 0; i < numeredBtns.value.length; i++) {
-      //   if (numeredBtns.value[i].numeredBtnPressed) {
-      //     emit("numButton", numeredBtns.value[i].thisElevator, numeredBtns.value[i].id );
-      //     console.log(numeredBtns.value[i].id);
-      //     numeredBtns.value[i].numeredBtnPressed = false;
-      //   }
-      // }
     }
-    /*function numBtnPress(index) {
-      emit(numBtnPress(index));
-    }*/
-    /*function numBtnPress(index) {
-      elev.value.callQueue.push(index);
-      elev.value.currentFloor = index.reverse();
-    }*/
-    // for cycle through numeredBtns and check if the button is pressed, if so, emit to the parent the index of button and thisElevator value
-    /*for(let i = 0; i < numeredBtns.value.length; i++) {
-      if(numeredBtns.value[i].numeredBtnPressed) {
-        emit("numButton", i,numeredBtns.value[i].numeredBtnPressed,numeredBtns.value);
-      }
-    }*/
-    //console.log(numeredBtns.value);
     return {
       switchValue,
       numBtnPress,
