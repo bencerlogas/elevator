@@ -1,11 +1,20 @@
 <template>
-  <MyElevator @num-button="insideBtns" v-for="elevator in elevators" :key="elevator.id" :elevator="elevator" :nrOfFloors="nrOfFloors" />
+  <MyElevator
+    v-for="(elevator, elevatorIndex) in elevators"
+    :key="elevator.elevatorId"
+    :elevator="elevator"
+    :nrOfFloors="nrOfFloors"
+    @buttonPressed="calledFromElevator($event, elevatorIndex)"
+  />
   <div class="up-down-btns">
-    <div v-for="(upDwnBtn, index) in upDwnBtns" :key="upDwnBtn.id" class="up-down-btn">
+    <div
+      v-for="(upDwnBtn, index) in upDwnBtns"
+      :key="upDwnBtn.id"
+      class="up-down-btn"
+    >
       <div>
         <div>{{ upDwnBtns.length - 1 - index }}</div>
         <button @click="btnPress('up', index)">↑</button>
-        <!--div>{{ upDwnBtn.isPressed }}</div-->
         <button @click="btnPress('down', index)">↓</button>
       </div>
     </div>
@@ -13,43 +22,44 @@
 </template>
 
 <script>
-import MyElevator from './components/MyElevator.vue';
-import { defineComponent, ref } from 'vue';
+import MyElevator from "./components/MyElevator.vue";
+import { defineComponent, ref } from "vue";
 
 export default defineComponent({
   components: {
-    MyElevator
+    MyElevator,
   },
   setup() {
-    const nrOfFloors = ref(7);
+    const nrOfFloors = ref(9);
     const upDwnBtns = ref([]);
     for (let i = 0; i < nrOfFloors.value; i++) {
       upDwnBtns.value.push({ isPressed: false, id: i });
     }
-    console.log(upDwnBtns.value);
     const elevators = ref([
       {
         currentFloor: 0,
         isMoving: false,
-        callQueue: []
+        callQueue: [],
+        elevatorId: 0,
       },
       {
         currentFloor: nrOfFloors.value - 1,
         isMoving: false,
-        callQueue: []
+        callQueue: [],
+        elevatorId: 1,
       },
-      // {
-      //   currentFloor: nrOfFloors.value - 2,
-      //   isMoving: false,
-      //   callQueue: []
-      // }
+      /*{
+        currentFloor: nrOfFloors.value - 2,
+        isMoving: false,
+        callQueue: [],
+        elevatorId: 2,
+      }*/
     ]);
-    function btnPress(direction, index) {
+    function btnPress(direction, index, elevatorIndex) {
       console.log(direction, index);
-      const indexOfElevator = getClosestElevator(index);
+      const indexOfElevator = elevatorIndex ?? getClosestElevator(index);
       elevators.value[indexOfElevator].callQueue.push(index);
       console.log(indexOfElevator);
-      // elevators.value[indexOfElevator].isMoving = true;
       elevators.value[indexOfElevator].currentFloor = index;
     }
 
@@ -63,21 +73,20 @@ export default defineComponent({
       const indexOfElevator = elevatorsDistance.indexOf(minDistance);
       return indexOfElevator;
     }
-    // insideBtns(index) controls the elevators[1] and elevators[2] separetely without getClosestElevator
-    function insideBtns(index) {
-      elevators.value[0].currentFloor = index;
-      elevators.value[0].callQueue.push(index);
-      console.log(elevators.value[0].callQueue);
-    }
 
+    function calledFromElevator({ index, btnNumber }, elevatorIndex) {
+      console.log(index, btnNumber, elevatorIndex);
+      btnPress("up", index, elevatorIndex);
+    }
+    
     return {
-      insideBtns,
+      calledFromElevator,
       btnPress,
       elevators: elevators.value.reverse(),
       nrOfFloors,
-      upDwnBtns: upDwnBtns.value.reverse()
+      upDwnBtns: upDwnBtns.value.reverse(),
     };
-  }
+  },
 });
 </script>
 
@@ -104,14 +113,14 @@ pre {
   display: grid;
   grid-template-columns: 3fr 1fr;
   place-content: center;
-  max-width: 34rem;
+  max-width: 24rem;
   margin: 0 auto;
   height: 15rem;
   position: relative;
 }
 
 .passing.floor::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 20px;
   left: 50px;
@@ -125,8 +134,8 @@ pre {
   width: 20rem;
   margin: 0 auto;
   position: inherit;
-  top: 10%;
-  left: 15%;
+  top: 5%;
+  left: 0%;
   display: flex;
   justify-content: space-between;
 
@@ -191,16 +200,28 @@ pre {
 }
 
 .up-down-btns {
+    display: inline-block;
+    position: absolute;
+    left: 800px;
+}
+
+.up-down-btn {
+  position: relative;
+  height: 240px;
+  align-items: stretch;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
 }
 
-.up-down-btns {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+.currentFloor {
+  text-align: center;
+  width: 15px;
+  height: 20px;
+  align-self: top;
+  border: 1px solid black;
+  padding: 1px;
+  margin: 1px;
 }
 </style>
