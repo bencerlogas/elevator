@@ -1,7 +1,11 @@
 <template>
   <div class="container">
     <div class="floor" v-for="(floor, index) in floors" :key="floor.id">
-      <div class="currentFloor">{{ nrOfFloors - elevator.currentFloor - 1 }}</div>
+      <div class="elevatorsPosition"
+           :class="elevator.currentFloor === index ? 'active' : ''"
+      >
+        {{ nrOfFloors - elevator.currentFloor - 1 }}
+        </div>
       <div
         class="doors"
         :class="
@@ -61,7 +65,6 @@ export default {
         isPassing: false,
       });
     }
-    // emit numBtnPress(index) to parent
     function switchValue(index) {
       numeredBtns.value[index].numeredBtnPressed =
         !numeredBtns.value[index].numeredBtnPressed;

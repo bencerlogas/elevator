@@ -63,8 +63,6 @@ export default defineComponent({
       elevators.value[indexOfElevator].currentFloor = index;
     }
 
-    // get the the closest floor to the callFloor if
-    // two elevators are to the same distance, call the one that is on the lower floor
     function getClosestElevator(callFloor) {
       const elevatorsDistance = elevators.value.map((elevator) => {
         return Math.abs(elevator.currentFloor - callFloor);
@@ -74,8 +72,8 @@ export default defineComponent({
       return indexOfElevator;
     }
 
-    function calledFromElevator({ index, btnNumber }, elevatorIndex) {
-      console.log(index, btnNumber, elevatorIndex);
+    function calledFromElevator({ index }, elevatorIndex) {
+      //console.log(index, elevatorIndex);
       btnPress("up", index, elevatorIndex);
     }
     
@@ -215,7 +213,7 @@ pre {
   align-items: center;
 }
 
-.currentFloor {
+.elevatorsPosition {
   text-align: center;
   width: 15px;
   height: 20px;
@@ -223,5 +221,10 @@ pre {
   border: 1px solid black;
   padding: 1px;
   margin: 1px;
+  font-weight: bold;
+  background-color: rgb(240, 30, 30);
+}
+.active.elevatorsPosition{
+  background-color: rgb(107, 223, 54);
 }
 </style>
